@@ -21,6 +21,10 @@ class AllowAnythingParser implements ArgParser {
   bool get allowsAnything => true;
   @override
   int get usageLineLength => null;
+  @override
+  String get description => null;
+  @override
+  bool get displayUsage => false;
 
   @override
   ArgParser addCommand(String name, [ArgParser parser]) {

@@ -58,12 +58,23 @@ class Usage {
   /// truncated if there is no available whitespace).
   final int lineLength;
 
-  Usage(this.optionsAndSeparators, {this.lineLength});
+  /// Simple message displayed at the top
+  final String description;
+
+  /// Display a usage message with all abbreviations and options name at
+  /// the top
+  /// Exemple: `usage: [-a] [--host] [--[no-]check]`
+  final bool displayUsage;
+
+  Usage(this.optionsAndSeparators, {this.lineLength, this.description, this.displayUsage = false});
 
   /// Generates a string displaying usage information for the defined options.
   /// This is basically the help text shown on the command line.
   String generate() {
     buffer = StringBuffer();
+
+    final usageBuffer = StringBuffer();
+    usageBuffer.write('usage: ');
 
     calculateColumnWidths();
 
@@ -79,8 +90,10 @@ class Usage {
       var option = optionOrSeparator as Option;
       if (option.hide) continue;
 
+      usageBuffer.write('[${getUsageOption(option)}] ');
+
       write(0, getAbbreviation(option));
-      write(1, getLongOption(option));
+      write(1, '${getLongOption(option)}${getMandatory(option)}');
 
       if (option.help != null) write(2, option.help);
 
@@ -114,7 +127,13 @@ class Usage {
       }
     }
 
-    return buffer.toString();
+    final usage = displayUsage ? '${usageBuffer.toString()}\n\n' : '';
+    final hasDescription = description != null && description.isNotEmpty;
+    final desc = hasDescription ? description : '';
+    final options = buffer.toString();
+    final prefix = options.isNotEmpty && hasDescription ? '\n\n' : '';
+
+    return '$usage' '$desc' '$prefix$options';
   }
 
   String getAbbreviation(Option option) =>
@@ -125,7 +144,7 @@ class Usage {
     if (option.negatable) {
       result = '--[no-]${option.name}';
     } else if (option.mandatory) {
-      result = '--${option.name} (mandatory)';
+      result = '--${option.name}';
     } else {
       result = '--${option.name}';
     }
@@ -133,6 +152,15 @@ class Usage {
     if (option.valueHelp != null) result += '=<${option.valueHelp}>';
 
     return result;
+  }
+
+  String getMandatory(Option option) {
+    return option.mandatory ? ' (mandatory)' : '';
+  }
+
+  String getUsageOption(Option option) {
+    final abbr = option.abbr == null ? '' : '-${option.abbr}';
+    return abbr.isEmpty ? getLongOption(option) : abbr;
   }
 
   String getAllowedTitle(Option option, String allowed) {
