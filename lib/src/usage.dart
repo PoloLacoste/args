@@ -93,7 +93,7 @@ class Usage {
       quickUsageBuffer.write(' [${getUsageOption(option)}]');
 
       write(0, getAbbreviation(option));
-      write(1, '${getLongOption(option)}${getMandatory(option)}');
+      write(1, getLongOption(option));
 
       if (option.help != null) write(2, option.help);
 
@@ -152,10 +152,6 @@ class Usage {
     if (option.valueHelp != null) result += '=<${option.valueHelp}>';
 
     return result;
-  }
-
-  String getMandatory(Option option) {
-    return option.mandatory ? ' (mandatory)' : '';
   }
 
   String getUsageOption(Option option) {
