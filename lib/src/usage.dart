@@ -73,8 +73,8 @@ class Usage {
   String generate() {
     buffer = StringBuffer();
 
-    final usageBuffer = StringBuffer();
-    usageBuffer.write('usage: ');
+    final quickUsageBuffer = StringBuffer();
+    quickUsageBuffer.write('usage:');
 
     calculateColumnWidths();
 
@@ -90,7 +90,7 @@ class Usage {
       var option = optionOrSeparator as Option;
       if (option.hide) continue;
 
-      usageBuffer.write('[${getUsageOption(option)}] ');
+      quickUsageBuffer.write(' [${getUsageOption(option)}]');
 
       write(0, getAbbreviation(option));
       write(1, '${getLongOption(option)}${getMandatory(option)}');
@@ -127,13 +127,13 @@ class Usage {
       }
     }
 
-    final usage = displayUsage ? '${usageBuffer.toString()}\n\n' : '';
+    final quickUsage = displayUsage ? '${quickUsageBuffer.toString()}\n\n' : '';
     final hasDescription = description != null && description.isNotEmpty;
     final desc = hasDescription ? description : '';
     final options = buffer.toString();
     final prefix = options.isNotEmpty && hasDescription ? '\n\n' : '';
 
-    return '$usage' '$desc' '$prefix$options';
+    return '$quickUsage' '$desc' '$prefix$options';
   }
 
   String getAbbreviation(Option option) =>

@@ -418,6 +418,23 @@ void main() {
           ''');
     });
 
+    test('display description', () {
+      var parser = ArgParser(description: 'A simple description');
+      validateUsage(parser, '''
+        A simple description
+        ''');
+    });
+
+    test('display simple quick usage message', () {
+      var parser = ArgParser(displayUsage: true);
+      parser.addOption('check');
+      validateUsage(parser, '''
+        usage: [--check]
+
+        --check    
+        ''');
+    });
+
     group('separators', () {
       test("separates options where it's placed", () {
         var parser = ArgParser();
@@ -492,7 +509,7 @@ void main() {
         var parser = ArgParser();
         parser.addOption('test', mandatory: true);
         validateUsage(parser, '''
-          --test (mandatory)    
+          --test (mandatory)
           ''');
       });
     });
