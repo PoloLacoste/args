@@ -435,6 +435,20 @@ void main() {
         ''');
     });
 
+    test('display complex quick usage message', () {
+      var parser = ArgParser(displayQuickUsage: true);
+      parser.addOption('check');
+      parser.addOption('host', abbr: 'h');
+      parser.addFlag('checked', negatable: true);
+      validateUsage(parser, '''
+        usage: [--check] [-h] [--[no-]checked]
+
+            --check           
+        -h, --host            
+            --[no-]checked    
+        ''');
+    });
+
     group('separators', () {
       test("separates options where it's placed", () {
         var parser = ArgParser();
