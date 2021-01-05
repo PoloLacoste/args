@@ -61,12 +61,12 @@ class Usage {
   /// Simple message displayed at the top
   final String description;
 
-  /// Display a usage message with all abbreviations and options name at
+  /// Display a quick usage message with all abbreviations and options name at
   /// the top
   /// Exemple: `usage: [-a] [--host] [--[no-]check]`
-  final bool displayUsage;
+  final bool displayQuickUsage;
 
-  Usage(this.optionsAndSeparators, {this.lineLength, this.description, this.displayUsage = false});
+  Usage(this.optionsAndSeparators, {this.lineLength, this.description, this.displayQuickUsage = false});
 
   /// Generates a string displaying usage information for the defined options.
   /// This is basically the help text shown on the command line.
@@ -127,7 +127,7 @@ class Usage {
       }
     }
 
-    final quickUsage = displayUsage ? '${quickUsageBuffer.toString()}\n\n' : '';
+    final quickUsage = displayQuickUsage ? '${quickUsageBuffer.toString()}\n\n' : '';
     final hasDescription = description != null && description.isNotEmpty;
     final desc = hasDescription ? description : '';
     final options = buffer.toString();

@@ -49,10 +49,10 @@ class ArgParser {
   /// An optional description of the parser at displayed the top of the usage message
   final String description;
 
-  /// Display a usage message with all abbreviations and options name at
+  /// Display a quick usage message with all abbreviations and options name at
   /// the top of the usage message
   /// Exemple: `usage: [-a] [--host] [--[no-]check]`
-  final bool displayUsage;
+  final bool displayQuickUsage;
 
   /// Whether or not this parser treats unrecognized options as non-option
   /// arguments.
@@ -65,12 +65,12 @@ class ArgParser {
   /// the parser stops parsing as soon as it finds an argument that is neither
   /// an option nor a command.
   factory ArgParser({bool allowTrailingOptions = true, int usageLineLength,
-    String description, bool displayUsage = false}) =>
+    String description, bool displayQuickUsage = false}) =>
       ArgParser._(<String, Option>{}, <String, ArgParser>{},
           allowTrailingOptions: allowTrailingOptions,
           usageLineLength: usageLineLength,
           description: description,
-          displayUsage: displayUsage);
+          displayQuickUsage: displayQuickUsage);
 
   /// Creates a new ArgParser that treats *all input* as non-option arguments.
   ///
@@ -82,7 +82,7 @@ class ArgParser {
 
   ArgParser._(Map<String, Option> options, Map<String, ArgParser> commands,
       {bool allowTrailingOptions = true, this.usageLineLength, this.description,
-      this.displayUsage = false})
+      this.displayQuickUsage = false})
       : _options = options,
         options = UnmodifiableMapView(options),
         _commands = commands,
@@ -352,7 +352,7 @@ class ArgParser {
   /// This is basically the help text shown on the command line.
   String get usage {
     return Usage(_optionsAndSeparators, lineLength: usageLineLength,
-      description: description, displayUsage: displayUsage).generate();
+      description: description, displayQuickUsage: displayQuickUsage).generate();
   }
 
   /// Get the default value for an option. Useful after parsing to test if the

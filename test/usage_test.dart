@@ -426,7 +426,7 @@ void main() {
     });
 
     test('display simple quick usage message', () {
-      var parser = ArgParser(displayUsage: true);
+      var parser = ArgParser(displayQuickUsage: true);
       parser.addOption('check');
       validateUsage(parser, '''
         usage: [--check]
