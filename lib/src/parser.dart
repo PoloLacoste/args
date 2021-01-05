@@ -100,7 +100,7 @@ class Parser {
       // Check if an option was mandatory and exist
       // if not throw an exception
       if (option.mandatory && parsedOption == null) {
-        throw ArgParserException('Option is mandatory', [name]);
+        throw ArgParserException('Option $name is mandatory', [name]);
       }
 
       if (option.callback == null) return;
