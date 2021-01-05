@@ -1,3 +1,7 @@
+## 1.6.1
+
+* Added mandatory flag for options
+
 ## 1.6.0
 
 * Remove `help` from the list of commands in usage.
