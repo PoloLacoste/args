@@ -183,7 +183,7 @@ class Usage {
       abbr = math.max(abbr, getAbbreviation(option).length);
 
       // Make room for the option.
-      title = math.max(title, getLongOption(option).length);
+      title = math.max(title, getLongOption(option).length + getMandatory(option).length);
 
       // Make room for the allowed help.
       if (option.allowedHelp != null) {
