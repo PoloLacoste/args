@@ -441,28 +441,61 @@ void main() {
         ''');
     });
 
-    test('display simple quick usage message', () {
-      var parser = ArgParser(displayQuickUsage: true);
+    test('display description and option', () {
+      var parser = ArgParser(description: 'A simple description');
       parser.addOption('check');
       validateUsage(parser, '''
-        usage: [--check]
+        A simple description
 
         --check    
         ''');
     });
 
-    test('display complex quick usage message', () {
-      var parser = ArgParser(displayQuickUsage: true);
-      parser.addOption('check');
-      parser.addOption('host', abbr: 'h');
-      parser.addFlag('checked', negatable: true);
-      validateUsage(parser, '''
-        usage: [--check] [-h] [--[no-]checked]
+    group('Quick Usage', () {
+      test('display simple quick usage message', () {
+        var parser = ArgParser(displayQuickUsage: true);
+        parser.addOption('check');
+        validateUsage(parser, '''
+          usage: [--check]
 
-            --check           
-        -h, --host            
-            --[no-]checked    
-        ''');
+          --check    
+          ''');
+      });
+
+      test('display quick usage with description and one option', () {
+        var parser = ArgParser(description: 'A simple description', displayQuickUsage: true);
+        parser.addOption('check');
+        validateUsage(parser, '''
+          usage: [--check]
+
+          A simple description
+
+          --check    
+          ''');
+      });
+
+      test('display quick usage with description and no options', () {
+        var parser = ArgParser(description: 'A simple description', displayQuickUsage: true);
+        validateUsage(parser, '''
+          usage:
+
+          A simple description
+          ''');
+      });
+
+      test('display quick usage message with many options', () {
+        var parser = ArgParser(displayQuickUsage: true);
+        parser.addOption('check');
+        parser.addOption('host', abbr: 'h');
+        parser.addFlag('checked', negatable: true);
+        validateUsage(parser, '''
+          usage: [--check] [-h] [--[no-]checked]
+
+              --check           
+          -h, --host            
+              --[no-]checked    
+          ''');
+      });
     });
 
     group('separators', () {
