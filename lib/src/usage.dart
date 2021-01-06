@@ -80,7 +80,7 @@ class Usage {
       if (option.hide) continue;
 
       write(0, getAbbreviation(option));
-      write(1, getLongOption(option));
+      write(1, '${getLongOption(option)}${getMandatory(option)}');
 
       if (option.help != null) write(2, option.help);
 
@@ -125,7 +125,7 @@ class Usage {
     if (option.negatable) {
       result = '--[no-]${option.name}';
     } else if (option.mandatory) {
-      result = '--${option.name} (mandatory)';
+      result = '--${option.name}';
     } else {
       result = '--${option.name}';
     }
@@ -133,6 +133,10 @@ class Usage {
     if (option.valueHelp != null) result += '=<${option.valueHelp}>';
 
     return result;
+  }
+
+  String getMandatory(Option option) {
+    return option.mandatory ? ' (mandatory)' : '';
   }
 
   String getAllowedTitle(Option option, String allowed) {
