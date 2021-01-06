@@ -58,12 +58,23 @@ class Usage {
   /// truncated if there is no available whitespace).
   final int lineLength;
 
-  Usage(this.optionsAndSeparators, {this.lineLength});
+  /// Simple message displayed at the top
+  final String description;
+
+  /// Display a quick usage message with all abbreviations and options name at
+  /// the top
+  /// Exemple: `usage: [-a] [--host] [--[no-]check]`
+  final bool displayQuickUsage;
+
+  Usage(this.optionsAndSeparators, {this.lineLength, this.description, this.displayQuickUsage = false});
 
   /// Generates a string displaying usage information for the defined options.
   /// This is basically the help text shown on the command line.
   String generate() {
     buffer = StringBuffer();
+
+    final quickUsageBuffer = StringBuffer();
+    quickUsageBuffer.write('usage:');
 
     calculateColumnWidths();
 
@@ -78,6 +89,8 @@ class Usage {
 
       var option = optionOrSeparator as Option;
       if (option.hide) continue;
+
+      quickUsageBuffer.write(' [${getUsageOption(option)}]');
 
       write(0, getAbbreviation(option));
       write(1, '${getLongOption(option)}${getMandatory(option)}');
@@ -114,7 +127,13 @@ class Usage {
       }
     }
 
-    return buffer.toString();
+    final quickUsage = displayQuickUsage ? '${quickUsageBuffer.toString()}\n\n' : '';
+    final hasDescription = description != null && description.isNotEmpty;
+    final desc = hasDescription ? description : '';
+    final options = buffer.toString();
+    final prefix = options.isNotEmpty && hasDescription ? '\n\n' : '';
+
+    return '$quickUsage' '$desc' '$prefix$options';
   }
 
   String getAbbreviation(Option option) =>
@@ -137,6 +156,11 @@ class Usage {
 
   String getMandatory(Option option) {
     return option.mandatory ? ' (mandatory)' : '';
+  }
+  
+  String getUsageOption(Option option) {
+    final abbr = option.abbr == null ? '' : '-${option.abbr}';
+    return abbr.isEmpty ? getLongOption(option) : abbr;
   }
 
   String getAllowedTitle(Option option, String allowed) {

@@ -46,6 +46,14 @@ class ArgParser {
   /// If null (the default), help messages are not wrapped.
   final int usageLineLength;
 
+  /// An optional description of the parser at displayed the top of the usage message
+  final String description;
+
+  /// Display a quick usage message with all abbreviations and options name at
+  /// the top of the usage message
+  /// Exemple: `usage: [-a] [--host] [--[no-]check]`
+  final bool displayQuickUsage;
+
   /// Whether or not this parser treats unrecognized options as non-option
   /// arguments.
   bool get allowsAnything => false;
@@ -56,10 +64,13 @@ class ArgParser {
   /// flags and options that appear after positional arguments. If it's `false`,
   /// the parser stops parsing as soon as it finds an argument that is neither
   /// an option nor a command.
-  factory ArgParser({bool allowTrailingOptions = true, int usageLineLength}) =>
+  factory ArgParser({bool allowTrailingOptions = true, int usageLineLength,
+    String description, bool displayQuickUsage = false}) =>
       ArgParser._(<String, Option>{}, <String, ArgParser>{},
           allowTrailingOptions: allowTrailingOptions,
-          usageLineLength: usageLineLength);
+          usageLineLength: usageLineLength,
+          description: description,
+          displayQuickUsage: displayQuickUsage);
 
   /// Creates a new ArgParser that treats *all input* as non-option arguments.
   ///
@@ -70,7 +81,8 @@ class ArgParser {
   factory ArgParser.allowAnything() = AllowAnythingParser;
 
   ArgParser._(Map<String, Option> options, Map<String, ArgParser> commands,
-      {bool allowTrailingOptions = true, this.usageLineLength})
+      {bool allowTrailingOptions = true, this.usageLineLength, this.description,
+      this.displayQuickUsage = false})
       : _options = options,
         options = UnmodifiableMapView(options),
         _commands = commands,
@@ -345,7 +357,8 @@ class ArgParser {
   ///
   /// This is basically the help text shown on the command line.
   String get usage {
-    return Usage(_optionsAndSeparators, lineLength: usageLineLength).generate();
+    return Usage(_optionsAndSeparators, lineLength: usageLineLength,
+      description: description, displayQuickUsage: displayQuickUsage).generate();
   }
 
   /// Get the default value for an option. Useful after parsing to test if the

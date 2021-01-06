@@ -12,7 +12,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 
 void main() {
-  var parser = ArgParser();
+  var parser = ArgParser(description: 'A simple description', displayQuickUsage: true);
 
   parser.addSeparator('===== Platform');
 
