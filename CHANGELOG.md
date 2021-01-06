@@ -1,3 +1,8 @@
+## 1.6.2
+
+* Added quick usage message
+* Added description
+
 ## 1.6.1
 
 * Added mandatory flag for options
