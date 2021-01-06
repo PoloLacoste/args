@@ -127,13 +127,15 @@ class Usage {
       }
     }
 
-    final quickUsage = displayQuickUsage ? '${quickUsageBuffer.toString()}\n\n' : '';
+    final quickUsage = displayQuickUsage ? '${quickUsageBuffer.toString()}' : '';
     final hasDescription = description != null && description.isNotEmpty;
     final desc = hasDescription ? description : '';
     final options = buffer.toString();
-    final prefix = options.isNotEmpty && hasDescription ? '\n\n' : '';
+    var quickUsageSpacing = displayQuickUsage && options.isNotEmpty || 
+      displayQuickUsage && hasDescription ? '\n\n' : '';
+    final optionsSpacing = options.isNotEmpty && hasDescription ? '\n\n' : '';
 
-    return '$quickUsage' '$desc' '$prefix$options';
+    return '$quickUsage$quickUsageSpacing' '$desc' '$optionsSpacing$options';
   }
 
   String getAbbreviation(Option option) =>
