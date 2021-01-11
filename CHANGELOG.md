@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.2
+
+* Display a description and a quick usage message.
+
 ## 2.0.0-nullsafety.1
 
 * Added a required field to require the presence of an option.
