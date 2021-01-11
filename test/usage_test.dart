@@ -420,6 +420,72 @@ void main() {
       );
     });
 
+    group('Description', () {
+      test('display description', () {
+        var parser = ArgParser(description: 'A simple description');
+        validateUsage(parser, '''
+          A simple description
+          ''');
+      });
+
+      test('display description and option', () {
+        var parser = ArgParser(description: 'A simple description');
+        parser.addOption('check');
+        validateUsage(parser, '''
+          A simple description
+
+          --check    
+          ''');
+      });
+    });
+
+    group('Quick Usage', () {
+      test('display simple quick usage message', () {
+        var parser = ArgParser(displayQuickUsage: true);
+        parser.addOption('check');
+        validateUsage(parser, '''
+          usage: [--check]
+
+          --check    
+          ''');
+      });
+
+      test('display quick usage with description and one option', () {
+        var parser = ArgParser(description: 'A simple description', displayQuickUsage: true);
+        parser.addOption('check');
+        validateUsage(parser, '''
+          A simple description
+
+          usage: [--check]
+
+          --check    
+          ''');
+      });
+
+      test('display quick usage with description and no options', () {
+        var parser = ArgParser(description: 'A simple description', displayQuickUsage: true);
+        validateUsage(parser, '''
+          A simple description
+
+          usage:
+          ''');
+      });
+
+      test('display quick usage message with many options', () {
+        var parser = ArgParser(displayQuickUsage: true);
+        parser.addOption('check');
+        parser.addOption('host', abbr: 'h');
+        parser.addFlag('checked', negatable: true);
+        validateUsage(parser, '''
+          usage: [--check] [-h] [--[no-]checked]
+
+              --check           
+          -h, --host            
+              --[no-]checked    
+          ''');
+      });
+    });
+
     group('separators', () {
       test("separates options where it's placed", () {
         var parser = ArgParser();

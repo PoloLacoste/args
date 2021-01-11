@@ -22,8 +22,9 @@ import 'utils.dart';
 /// text is wrapped. Help that extends past this column will be wrapped at the
 /// nearest whitespace (or truncated if there is no available whitespace). If
 /// `null` there will not be any wrapping.
-String generateUsage(List optionsAndSeparators, {int? lineLength}) =>
-    _Usage(optionsAndSeparators, lineLength).generate();
+String generateUsage(List optionsAndSeparators, {int? lineLength, 
+  String? description, bool displayQuickUsage = false}) =>
+    _Usage(optionsAndSeparators, lineLength, description, displayQuickUsage).generate();
 
 class _Usage {
   /// Abbreviation, long name, help.
@@ -34,6 +35,12 @@ class _Usage {
 
   /// The working buffer for the generated usage text.
   final _buffer = StringBuffer();
+
+  /// The working buffer for the generated options usage text.
+  final _optionsBuffer = StringBuffer();
+
+  /// The working buffer for the generated quick usage text.
+  final _quickUsageBuffer = StringBuffer();
 
   /// The column that the "cursor" is currently on.
   ///
@@ -58,11 +65,23 @@ class _Usage {
   /// whitespace (or truncated if there is no available whitespace).
   final int? lineLength;
 
-  _Usage(this._optionsAndSeparators, this.lineLength);
+  /// Simple message displayed at the top
+  final String? description;
+
+  /// Display a quick usage message with all abbreviations and 
+  /// options name below the description or at the top of the message
+  /// Exemple: `usage: [-a] [--host] [--[no-]check]`
+  final bool displayQuickUsage;
+
+  _Usage(this._optionsAndSeparators, this.lineLength, this.description, this.displayQuickUsage);
 
   /// Generates a string displaying usage information for the defined options.
   /// This is basically the help text shown on the command line.
   String generate() {
+
+    _writeDescription();
+    _writeQuickUsageStarter();
+
     for (var optionOrSeparator in _optionsAndSeparators) {
       if (optionOrSeparator is String) {
         _writeSeparator(optionOrSeparator);
@@ -71,15 +90,19 @@ class _Usage {
       var option = optionOrSeparator as Option;
       if (option.hide) continue;
       _writeOption(option);
+      _writeQuickUsageOption(option);
     }
+
+    _writeQuickUsage();
+    _writeOptions();
 
     return _buffer.toString();
   }
 
   void _writeSeparator(String separator) {
     // Ensure that there's always a blank line before a separator.
-    if (_buffer.isNotEmpty) _buffer.write('\n\n');
-    _buffer.write(separator);
+    if (_optionsBuffer.isNotEmpty) _optionsBuffer.write('\n\n');
+    _optionsBuffer.write(separator);
     _newlinesNeeded = 1;
   }
 
@@ -135,6 +158,12 @@ class _Usage {
     return option.required ? ' (required)' : '';
   }
 
+  String _usageOption(Option option) {
+    final abbr = option.abbr == null ? '' : '-${option.abbr}';
+    final str = abbr.isEmpty ? _longOption(option) : abbr;
+    return '[$str]';
+  }
+
   String _allowedTitle(Option option, String allowed) {
     var isDefault = option.defaultsTo is List
         ? option.defaultsTo.contains(allowed)
@@ -173,6 +202,37 @@ class _Usage {
     _currentColumn = 0;
   }
 
+  void _writeQuickUsageOption(Option option) {
+    _quickUsageBuffer.write(' ${_usageOption(option)}');
+  }
+
+  void _writeDescription() {
+    if(description?.isNotEmpty != null) {
+      _buffer.write(description);
+      if(displayQuickUsage || _optionsAndSeparators.isNotEmpty) {
+        _buffer.write('\n\n');
+      }
+    }
+    
+  }
+
+  void _writeQuickUsageStarter() {
+    _quickUsageBuffer.write('usage:');
+  }
+
+  void _writeQuickUsage() {
+    if(displayQuickUsage) {
+      _buffer.write(_quickUsageBuffer.toString());
+      if(_optionsAndSeparators.isNotEmpty) {
+        _buffer.write('\n\n');
+      }
+    }
+  }
+
+  void _writeOptions() {
+    _buffer.write(_optionsBuffer.toString());
+  }
+
   void _write(int column, String text) {
     var lines = text.split('\n');
     // If we are writing the last column, word wrap it to fit.
@@ -201,7 +261,7 @@ class _Usage {
   void _writeLine(int column, String text) {
     // Write any pending newlines.
     while (_newlinesNeeded > 0) {
-      _buffer.write('\n');
+      _optionsBuffer.write('\n');
       _newlinesNeeded--;
     }
 
@@ -209,19 +269,19 @@ class _Usage {
     // to the next line.
     while (_currentColumn != column) {
       if (_currentColumn < _columnCount - 1) {
-        _buffer.write(' ' * _columnWidths[_currentColumn]);
+        _optionsBuffer.write(' ' * _columnWidths[_currentColumn]);
       } else {
-        _buffer.write('\n');
+        _optionsBuffer.write('\n');
       }
       _currentColumn = (_currentColumn + 1) % _columnCount;
     }
 
     if (column < _columnWidths.length) {
       // Fixed-size column, so pad it.
-      _buffer.write(text.padRight(_columnWidths[column]));
+      _optionsBuffer.write(text.padRight(_columnWidths[column]));
     } else {
       // The last column, so just write it.
-      _buffer.write(text);
+      _optionsBuffer.write(text);
     }
 
     // Advance to the next column.
